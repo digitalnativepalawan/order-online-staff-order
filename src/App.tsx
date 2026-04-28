@@ -39,6 +39,8 @@ import StaffGuard from "./components/staff/StaffGuard";
 import AdminStaff from "./components/admin/AdminStaff";
 import AdminCatering from "./components/admin/AdminCatering";
 import Catering from "./pages/Catering";
+import Onboarding from "./pages/Onboarding";
+import OnboardingGate from "./components/OnboardingGate";
 
 const queryClient = new QueryClient();
 
@@ -49,11 +51,15 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <CartDrawer />
-            <main className="flex-1">
-              <Routes>
+          <OnboardingGate>
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <CartDrawer />
+              <main className="flex-1">
+                <Routes>
+                  {/* Onboarding (one-time) */}
+                  <Route path="/onboarding" element={<Onboarding />} />
+
                 {/* User Routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/checkout" element={<Checkout />} />
@@ -92,10 +98,11 @@ const App = () => (
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </OnboardingGate>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

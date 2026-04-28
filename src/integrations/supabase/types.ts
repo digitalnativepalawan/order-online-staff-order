@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       business_settings: {
         Row: {
+          admin_passkey: string
           business_address: string
           business_email: string
           business_name: string
@@ -23,6 +24,7 @@ export type Database = {
           confirmation_email_template: string
           confirmation_whatsapp_template: string
           copyright_text: string
+          currency_code: string
           currency_symbol: string
           facebook_url: string | null
           favicon_url: string | null
@@ -30,11 +32,14 @@ export type Database = {
           id: number
           instagram_url: string | null
           logo_url: string | null
+          onboarding_completed: boolean
+          primary_color: string
           ready_email_template: string
           ready_whatsapp_template: string
           whatsapp_business_number: string | null
         }
         Insert: {
+          admin_passkey?: string
           business_address?: string
           business_email?: string
           business_name?: string
@@ -42,6 +47,7 @@ export type Database = {
           confirmation_email_template?: string
           confirmation_whatsapp_template?: string
           copyright_text?: string
+          currency_code?: string
           currency_symbol?: string
           facebook_url?: string | null
           favicon_url?: string | null
@@ -49,11 +55,14 @@ export type Database = {
           id?: number
           instagram_url?: string | null
           logo_url?: string | null
+          onboarding_completed?: boolean
+          primary_color?: string
           ready_email_template?: string
           ready_whatsapp_template?: string
           whatsapp_business_number?: string | null
         }
         Update: {
+          admin_passkey?: string
           business_address?: string
           business_email?: string
           business_name?: string
@@ -61,6 +70,7 @@ export type Database = {
           confirmation_email_template?: string
           confirmation_whatsapp_template?: string
           copyright_text?: string
+          currency_code?: string
           currency_symbol?: string
           facebook_url?: string | null
           favicon_url?: string | null
@@ -68,6 +78,8 @@ export type Database = {
           id?: number
           instagram_url?: string | null
           logo_url?: string | null
+          onboarding_completed?: boolean
+          primary_color?: string
           ready_email_template?: string
           ready_whatsapp_template?: string
           whatsapp_business_number?: string | null

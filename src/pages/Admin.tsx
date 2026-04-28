@@ -22,8 +22,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrderRealtime, useSoundEnabled, useUnviewedOrders } from "@/hooks/use-order-alerts";
 
-const PASSKEY = "5309";
-
 function AdminPanel() {
   const [tab, setTab] = useState("dashboard");
   const { enabled: soundEnabled, toggle: toggleSound } = useSoundEnabled();
@@ -116,9 +114,24 @@ export default function Admin() {
   const [authenticated, setAuthenticated] = useState(false);
   const [passkey, setPasskey] = useState("");
 
+  const { data: settings } = useQuery({
+    queryKey: ["admin-passkey"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("business_settings")
+        .select("admin_passkey")
+        .eq("id", 1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passkey === PASSKEY) setAuthenticated(true);
+    const expected = settings?.admin_passkey || "5309";
+    if (passkey === expected) setAuthenticated(true);
+    else setPasskey("");
   };
 
   if (!authenticated) {
