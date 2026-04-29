@@ -179,21 +179,73 @@ export default function Onboarding() {
 
           {step === 2 && (
             <>
-              <Field label="Primary brand color">
-                <div className="flex flex-wrap gap-2">
-                  {PRESET_COLORS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setPrimaryColor(c)}
-                      className={`h-10 w-10 rounded-full border-2 transition ${primaryColor === c ? "border-foreground scale-110" : "border-transparent"}`}
-                      style={{ backgroundColor: c }}
-                      aria-label={c}
-                    />
-                  ))}
-                  <input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="h-10 w-10 rounded-full border cursor-pointer" />
+              <Field label="Color scheme">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {PALETTES.map((p) => {
+                    const selected = palette.name === p.name;
+                    return (
+                      <button
+                        key={p.name}
+                        type="button"
+                        onClick={() => setPalette(p)}
+                        className={`p-3 rounded-lg border-2 text-left transition ${selected ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"}`}
+                      >
+                        <div className="flex gap-1 mb-2">
+                          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: p.primary }} />
+                          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: p.accent }} />
+                          <span className="h-3 w-3 rounded-full border" style={{ backgroundColor: p.background }} />
+                        </div>
+                        <div className="text-sm font-semibold">{p.name}</div>
+                        <div className="mt-1.5 h-0.5 rounded-full" style={{ backgroundColor: p.primary }} />
+                      </button>
+                    );
+                  })}
                 </div>
               </Field>
+
+              <Field label="Customize colors">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {([
+                    ["primary", "Primary"],
+                    ["background", "Background"],
+                    ["text", "Text"],
+                    ["accent", "Accent"],
+                  ] as const).map(([key, label]) => (
+                    <div key={key} className="space-y-1">
+                      <Label className="text-xs">{label}</Label>
+                      <div className="relative">
+                        <input
+                          type="color"
+                          value={palette[key]}
+                          onChange={(e) => setPalette({ ...palette, name: "Custom", [key]: e.target.value })}
+                          className="h-10 w-full rounded-md border cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Field>
+
+              <Field label="Typography">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {FONT_PAIRS.map((f) => {
+                    const selected = fontPair.name === f.name;
+                    return (
+                      <button
+                        key={f.name}
+                        type="button"
+                        onClick={() => setFontPair(f)}
+                        className={`p-3 rounded-lg border-2 text-left transition ${selected ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"}`}
+                      >
+                        <div className="text-sm font-semibold">{f.name}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">Heading: {f.heading}</div>
+                        <div className="text-xs text-muted-foreground">Body: {f.body}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Field>
+
               <Field label="Default currency">
                 <div className="grid grid-cols-3 gap-2">
                   {(Object.keys(CURRENCY_SYMBOLS) as CurrencyCode[]).map((c) => (
@@ -259,9 +311,16 @@ export default function Onboarding() {
                   Your store is ready. Click finish to start adding your menu from the admin panel.
                 </p>
               </div>
-              <div className="text-left rounded-lg border p-3 text-sm space-y-1 bg-muted/30">
+              <div className="text-left rounded-lg border p-3 text-sm space-y-1.5 bg-muted/30">
                 <div><span className="text-muted-foreground">Currency:</span> {CURRENCY_SYMBOLS[currencyCode]} {currencyCode}</div>
-                <div className="flex items-center gap-2"><span className="text-muted-foreground">Brand color:</span> <span className="h-4 w-4 rounded-full inline-block" style={{ backgroundColor: primaryColor }} /> {primaryColor}</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-muted-foreground">Palette ({palette.name}):</span>
+                  <span className="h-4 w-4 rounded-full inline-block border" style={{ backgroundColor: palette.primary }} />
+                  <span className="h-4 w-4 rounded-full inline-block border" style={{ backgroundColor: palette.accent }} />
+                  <span className="h-4 w-4 rounded-full inline-block border" style={{ backgroundColor: palette.background }} />
+                  <span className="h-4 w-4 rounded-full inline-block border" style={{ backgroundColor: palette.text }} />
+                </div>
+                <div><span className="text-muted-foreground">Fonts:</span> {fontPair.heading} / {fontPair.body}</div>
                 <div><span className="text-muted-foreground">Admin passkey:</span> •••• (saved)</div>
               </div>
             </div>
