@@ -8,15 +8,36 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, Store, Palette, KeyRound, CheckCircle2, Upload } from "lucide-react";
+import { Sparkles, Store, Palette, KeyRound, CheckCircle2, Upload, Type } from "lucide-react";
 import { toast } from "sonner";
 import { setStoredCurrency, type CurrencyCode, CURRENCY_LABELS, CURRENCY_SYMBOLS } from "@/lib/currency-store";
 
 const STEPS = ["Welcome", "Business", "Branding", "Passkey", "Done"] as const;
 
-const PRESET_COLORS = [
-  "#f97316", "#ef4444", "#ec4899", "#a855f7",
-  "#3b82f6", "#06b6d4", "#10b981", "#eab308",
+type Palette = {
+  name: string;
+  primary: string;
+  background: string;
+  text: string;
+  accent: string;
+};
+
+const PALETTES: Palette[] = [
+  { name: "Ocean Breeze",   primary: "#0ea5e9", background: "#ffffff", text: "#0f172a", accent: "#f59e0b" },
+  { name: "Tropical Sunset", primary: "#f97316", background: "#ffffff", text: "#0f172a", accent: "#ec4899" },
+  { name: "Forest Retreat",  primary: "#059669", background: "#f8fafc", text: "#0f172a", accent: "#65a30d" },
+  { name: "Luxury Gold",     primary: "#7c3aed", background: "#fafaf9", text: "#1c1917", accent: "#ca8a04" },
+  { name: "Minimal Modern",  primary: "#0f172a", background: "#ffffff", text: "#0f172a", accent: "#737373" },
+  { name: "Beach Vibes",     primary: "#06b6d4", background: "#f0f9ff", text: "#0c4a6e", accent: "#facc15" },
+];
+
+type FontPair = { name: string; heading: string; body: string };
+
+const FONT_PAIRS: FontPair[] = [
+  { name: "Modern Sans",    heading: "Plus Jakarta Sans", body: "Plus Jakarta Sans" },
+  { name: "Elegant Classic", heading: "Playfair Display", body: "Lato" },
+  { name: "Bold Impact",    heading: "Montserrat",        body: "Open Sans" },
+  { name: "Minimal Refined", heading: "DM Sans",          body: "DM Sans" },
 ];
 
 export default function Onboarding() {
@@ -32,7 +53,8 @@ export default function Onboarding() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const [primaryColor, setPrimaryColor] = useState("#f97316");
+  const [palette, setPalette] = useState<Palette>(PALETTES[1]);
+  const [fontPair, setFontPair] = useState<FontPair>(FONT_PAIRS[0]);
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>("PHP");
 
   const [passkey, setPasskey] = useState("");
@@ -77,7 +99,13 @@ export default function Onboarding() {
         business_phone: businessPhone.trim(),
         business_address: businessAddress.trim(),
         logo_url: logoUrl,
-        primary_color: primaryColor,
+        primary_color: palette.primary,
+        background_color: palette.background,
+        text_color: palette.text,
+        accent_color: palette.accent,
+        color_scheme_name: palette.name,
+        heading_font: fontPair.heading,
+        body_font: fontPair.body,
         currency_code: currencyCode,
         currency_symbol: CURRENCY_SYMBOLS[currencyCode],
         admin_passkey: passkey,
