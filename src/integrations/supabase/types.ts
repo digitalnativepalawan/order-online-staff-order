@@ -16,11 +16,15 @@ export type Database = {
     Tables: {
       business_settings: {
         Row: {
+          accent_color: string
           admin_passkey: string
+          background_color: string
+          body_font: string
           business_address: string
           business_email: string
           business_name: string
           business_phone: string
+          color_scheme_name: string
           confirmation_email_template: string
           confirmation_whatsapp_template: string
           copyright_text: string
@@ -29,6 +33,7 @@ export type Database = {
           facebook_url: string | null
           favicon_url: string | null
           google_maps_url: string | null
+          heading_font: string
           id: number
           instagram_url: string | null
           logo_url: string | null
@@ -36,14 +41,19 @@ export type Database = {
           primary_color: string
           ready_email_template: string
           ready_whatsapp_template: string
+          text_color: string
           whatsapp_business_number: string | null
         }
         Insert: {
+          accent_color?: string
           admin_passkey?: string
+          background_color?: string
+          body_font?: string
           business_address?: string
           business_email?: string
           business_name?: string
           business_phone?: string
+          color_scheme_name?: string
           confirmation_email_template?: string
           confirmation_whatsapp_template?: string
           copyright_text?: string
@@ -52,6 +62,7 @@ export type Database = {
           facebook_url?: string | null
           favicon_url?: string | null
           google_maps_url?: string | null
+          heading_font?: string
           id?: number
           instagram_url?: string | null
           logo_url?: string | null
@@ -59,14 +70,19 @@ export type Database = {
           primary_color?: string
           ready_email_template?: string
           ready_whatsapp_template?: string
+          text_color?: string
           whatsapp_business_number?: string | null
         }
         Update: {
+          accent_color?: string
           admin_passkey?: string
+          background_color?: string
+          body_font?: string
           business_address?: string
           business_email?: string
           business_name?: string
           business_phone?: string
+          color_scheme_name?: string
           confirmation_email_template?: string
           confirmation_whatsapp_template?: string
           copyright_text?: string
@@ -75,6 +91,7 @@ export type Database = {
           facebook_url?: string | null
           favicon_url?: string | null
           google_maps_url?: string | null
+          heading_font?: string
           id?: number
           instagram_url?: string | null
           logo_url?: string | null
@@ -82,6 +99,7 @@ export type Database = {
           primary_color?: string
           ready_email_template?: string
           ready_whatsapp_template?: string
+          text_color?: string
           whatsapp_business_number?: string | null
         }
         Relationships: []
