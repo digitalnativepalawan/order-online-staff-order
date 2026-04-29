@@ -93,7 +93,8 @@ export default function Onboarding() {
     setSaving(true);
     const { error } = await supabase
       .from("business_settings")
-      .update({
+      .upsert({
+        id: 1,
         business_name: businessName.trim(),
         business_email: businessEmail.trim(),
         business_phone: businessPhone.trim(),
@@ -111,8 +112,7 @@ export default function Onboarding() {
         admin_passkey: passkey,
         copyright_text: `© ${new Date().getFullYear()} ${businessName.trim()}`,
         onboarding_completed: true,
-      })
-      .eq("id", 1);
+      });
     setSaving(false);
     if (error) return toast.error(error.message);
     setStoredCurrency(currencyCode);
