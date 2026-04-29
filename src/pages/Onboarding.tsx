@@ -117,6 +117,8 @@ export default function Onboarding() {
     if (error) return toast.error(error.message);
     setStoredCurrency(currencyCode);
     qc.invalidateQueries({ queryKey: ["business-settings"] });
+    await qc.invalidateQueries({ queryKey: ["onboarding-status"] });
+    qc.setQueryData(["onboarding-status"], true);
     toast.success("Setup complete! Welcome to your new store.");
     navigate("/", { replace: true });
   };
