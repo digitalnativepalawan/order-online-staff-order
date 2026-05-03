@@ -8,11 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, Store, Palette, KeyRound, CheckCircle2, Upload, Type } from "lucide-react";
+import { Sparkles, Store, Palette, KeyRound, CheckCircle2, Upload, Type, Check } from "lucide-react";
 import { toast } from "sonner";
 import { setStoredCurrency, type CurrencyCode, CURRENCY_LABELS, CURRENCY_SYMBOLS } from "@/lib/currency-store";
 
 const STEPS = ["Welcome", "Business", "Branding", "Passkey", "Done"] as const;
+
+const STEP_ICONS = [Sparkles, Store, Palette, KeyRound, CheckCircle2];
 
 type Palette = {
   name: string;
@@ -135,8 +137,53 @@ export default function Onboarding() {
             <span className="text-xs text-muted-foreground">Step {step + 1} of {STEPS.length}</span>
           </div>
           <Progress value={progress} className="h-1.5" />
+          <div className="pt-4">
+            <ol className="flex items-center justify-between gap-1">
+              {STEPS.map((label, i) => {
+                const Icon = STEP_ICONS[i];
+                const isDone = i < step;
+                const isCurrent = i === step;
+                return (
+                  <li key={label} className="flex-1 flex flex-col items-center relative">
+                    {i > 0 && (
+                      <span
+                        className={`absolute right-1/2 top-4 h-0.5 w-full -translate-y-1/2 ${
+                          isDone || isCurrent ? "bg-primary" : "bg-border"
+                        }`}
+                      />
+                    )}
+                    <div
+                      className={`relative z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center transition ${
+                        isDone
+                          ? "bg-primary border-primary text-primary-foreground"
+                          : isCurrent
+                          ? "bg-background border-primary text-primary ring-4 ring-primary/15"
+                          : "bg-background border-border text-muted-foreground"
+                      }`}
+                    >
+                      {isDone ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                    </div>
+                    <span
+                      className={`mt-1.5 text-[10px] sm:text-xs font-medium text-center ${
+                        isCurrent ? "text-foreground" : "text-muted-foreground"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
           <CardTitle className="pt-4">{stepTitle(step)}</CardTitle>
-          <CardDescription>{stepDesc(step)}</CardDescription>
+          <CardDescription>
+            {stepDesc(step)}
+            {step < STEPS.length - 1 && (
+              <span className="block mt-1 text-xs text-muted-foreground/80">
+                Next: {STEPS[step + 1]}
+              </span>
+            )}
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-5">
