@@ -50,8 +50,6 @@ const allNavItems: NavItem[] = [
   { label: "Header/Footer", icon: FileText, path: "/admin/header-footer" },
   { label: "Categories", icon: Package, path: "/admin/categories" },
   { label: "Units", icon: UtensilsCrossed, path: "/admin/units" },
-  { label: "Staff", icon: Users, path: "/admin/staff" },
-  { label: "Kitchen", icon: ChefHat, path: "/staff/kitchen" },
   { label: "Catering", icon: PartyPopper, path: "/admin/catering" },
 ];
 
