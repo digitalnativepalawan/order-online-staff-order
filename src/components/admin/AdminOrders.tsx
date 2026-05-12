@@ -86,15 +86,6 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
     },
   });
 
-  const { data: staffList } = useQuery({
-    queryKey: ["staff-users-list"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("staff_users").select("id, name").order("name");
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const filtered = useMemo(() => {
     if (!orders) return [];
     return orders.filter(o => {
