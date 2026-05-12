@@ -61,13 +61,6 @@ const App = () => (
                 <Route path="/invoice/:orderId" element={<Invoice />} />
                 <Route path="/catering" element={<Catering />} />
 
-                {/* Staff / POS Routes */}
-                <Route path="/staff" element={<StaffLogin />} />
-                <Route path="/staff/tables" element={<StaffGuard><StaffTables /></StaffGuard>} />
-                <Route path="/staff/order/:orderId" element={<StaffGuard><StaffOrder /></StaffGuard>} />
-                <Route path="/staff/pay/:orderId" element={<StaffGuard><StaffPayment /></StaffGuard>} />
-                <Route path="/staff/kitchen" element={<StaffGuard><StaffKitchen /></StaffGuard>} />
-
                 <Route path="/:slug" element={<DynamicPage />} />
 
                 {/* Admin Routes with Layout */}
