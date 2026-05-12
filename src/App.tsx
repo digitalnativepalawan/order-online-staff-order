@@ -31,6 +31,7 @@ import Invoice from "./pages/Invoice";
 import TrackOrder from "./pages/TrackOrder";
 import NotFound from "./pages/NotFound";
 import Catering from "./pages/Catering";
+import AdminCatering from "./components/admin/AdminCatering";
 import Onboarding from "./pages/Onboarding";
 import OnboardingGate from "./components/OnboardingGate";
 
