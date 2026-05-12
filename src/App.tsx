@@ -79,7 +79,6 @@ const App = () => (
                 <Route path="/admin/loyalty" element={<AdminLayout><AdminLoyalty /></AdminLayout>} />
                 <Route path="/admin/categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
                 <Route path="/admin/units" element={<AdminLayout><AdminUnits /></AdminLayout>} />
-                <Route path="/admin/staff" element={<AdminLayout><AdminStaff /></AdminLayout>} />
                 <Route path="/admin/catering" element={<AdminLayout><AdminCatering /></AdminLayout>} />
 
                 {/* 404 */}
