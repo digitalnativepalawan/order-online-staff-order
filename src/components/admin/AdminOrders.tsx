@@ -61,7 +61,6 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
   const { data: settings } = useBusinessSettings();
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState<"all" | "online" | "pos">("all");
-  const [staffFilter, setStaffFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [stampOrder, setStampOrder] = useState<any>(null);
@@ -87,26 +86,16 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
     },
   });
 
-  const { data: staffList } = useQuery({
-    queryKey: ["staff-users-list"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("staff_users").select("id, name").order("name");
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const filtered = useMemo(() => {
     if (!orders) return [];
     return orders.filter(o => {
       const matchStatus = statusFilter === "all" || o.order_status === statusFilter;
       const matchSource = sourceFilter === "all" || (o.order_source ?? "online") === sourceFilter;
-      const matchStaff = staffFilter === "all" || o.staff_id === staffFilter;
       const q = search.toLowerCase();
       const matchSearch = !q || o.customer_name.toLowerCase().includes(q) || o.customer_phone.includes(q) || o.id.toLowerCase().includes(q);
-      return matchStatus && matchSource && matchStaff && matchSearch;
+      return matchStatus && matchSource && matchSearch;
     });
-  }, [orders, statusFilter, sourceFilter, staffFilter, search]);
+  }, [orders, statusFilter, sourceFilter, search]);
 
   const updateStatus = async (id: string, status: string) => {
     const update: any = { order_status: status };
@@ -226,16 +215,6 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
           <option value="all">All sources</option>
           <option value="online">Online</option>
           <option value="pos">POS</option>
-        </select>
-        <select
-          value={staffFilter}
-          onChange={(e) => setStaffFilter(e.target.value)}
-          className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-        >
-          <option value="all">All staff</option>
-          {(staffList ?? []).map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
         </select>
       </div>
       <div className="relative">

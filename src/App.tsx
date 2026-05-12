@@ -30,15 +30,8 @@ import FAQ from "./pages/FAQ";
 import Invoice from "./pages/Invoice";
 import TrackOrder from "./pages/TrackOrder";
 import NotFound from "./pages/NotFound";
-import StaffLogin from "./pages/StaffLogin";
-import StaffTables from "./pages/StaffTables";
-import StaffOrder from "./pages/StaffOrder";
-import StaffPayment from "./pages/StaffPayment";
-import StaffKitchen from "./pages/StaffKitchen";
-import StaffGuard from "./components/staff/StaffGuard";
-import AdminStaff from "./components/admin/AdminStaff";
-import AdminCatering from "./components/admin/AdminCatering";
 import Catering from "./pages/Catering";
+import AdminCatering from "./components/admin/AdminCatering";
 import Onboarding from "./pages/Onboarding";
 import OnboardingGate from "./components/OnboardingGate";
 
@@ -68,13 +61,6 @@ const App = () => (
                 <Route path="/invoice/:orderId" element={<Invoice />} />
                 <Route path="/catering" element={<Catering />} />
 
-                {/* Staff / POS Routes */}
-                <Route path="/staff" element={<StaffLogin />} />
-                <Route path="/staff/tables" element={<StaffGuard><StaffTables /></StaffGuard>} />
-                <Route path="/staff/order/:orderId" element={<StaffGuard><StaffOrder /></StaffGuard>} />
-                <Route path="/staff/pay/:orderId" element={<StaffGuard><StaffPayment /></StaffGuard>} />
-                <Route path="/staff/kitchen" element={<StaffGuard><StaffKitchen /></StaffGuard>} />
-
                 <Route path="/:slug" element={<DynamicPage />} />
 
                 {/* Admin Routes with Layout */}
@@ -93,7 +79,6 @@ const App = () => (
                 <Route path="/admin/loyalty" element={<AdminLayout><AdminLoyalty /></AdminLayout>} />
                 <Route path="/admin/categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
                 <Route path="/admin/units" element={<AdminLayout><AdminUnits /></AdminLayout>} />
-                <Route path="/admin/staff" element={<AdminLayout><AdminStaff /></AdminLayout>} />
                 <Route path="/admin/catering" element={<AdminLayout><AdminCatering /></AdminLayout>} />
 
                 {/* 404 */}
