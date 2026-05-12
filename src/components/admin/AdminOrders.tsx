@@ -216,16 +216,6 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
           <option value="online">Online</option>
           <option value="pos">POS</option>
         </select>
-        <select
-          value={staffFilter}
-          onChange={(e) => setStaffFilter(e.target.value)}
-          className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-        >
-          <option value="all">All staff</option>
-          {(staffList ?? []).map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
       </div>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
