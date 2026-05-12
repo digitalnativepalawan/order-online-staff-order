@@ -19,7 +19,6 @@ import {
   FileText,
   LogOut,
   UtensilsCrossed,
-  ChefHat,
   PartyPopper,
 } from "lucide-react";
 
