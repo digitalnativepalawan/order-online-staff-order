@@ -61,7 +61,6 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
   const { data: settings } = useBusinessSettings();
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState<"all" | "online" | "pos">("all");
-  const [staffFilter, setStaffFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [stampOrder, setStampOrder] = useState<any>(null);
