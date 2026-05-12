@@ -91,12 +91,11 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
     return orders.filter(o => {
       const matchStatus = statusFilter === "all" || o.order_status === statusFilter;
       const matchSource = sourceFilter === "all" || (o.order_source ?? "online") === sourceFilter;
-      const matchStaff = staffFilter === "all" || o.staff_id === staffFilter;
       const q = search.toLowerCase();
       const matchSearch = !q || o.customer_name.toLowerCase().includes(q) || o.customer_phone.includes(q) || o.id.toLowerCase().includes(q);
-      return matchStatus && matchSource && matchStaff && matchSearch;
+      return matchStatus && matchSource && matchSearch;
     });
-  }, [orders, statusFilter, sourceFilter, staffFilter, search]);
+  }, [orders, statusFilter, sourceFilter, search]);
 
   const updateStatus = async (id: string, status: string) => {
     const update: any = { order_status: status };
