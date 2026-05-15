@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, Pencil, Trash2, Upload, FileDown, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, FileDown, Download, FileUp } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 
@@ -45,6 +45,8 @@ function tsForFilename(d = new Date()) {
 export default function AdminProducts() {
   const qc = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
 
   const { data: products } = useQuery({
     queryKey: ["admin-products"],
@@ -172,6 +174,85 @@ export default function AdminProducts() {
     toast.success(`Exported ${products.length} products`);
   };
 
+  const parseCSVLine = (line: string, sep: string): string[] => {
+    const out: string[] = [];
+    let cur = "";
+    let inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQ) {
+        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (ch === '"') inQ = false;
+        else cur += ch;
+      } else {
+        if (ch === '"') inQ = true;
+        else if (ch === sep) { out.push(cur); cur = ""; }
+        else cur += ch;
+      }
+    }
+    out.push(cur);
+    return out;
+  };
+
+  const handleImportCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = (await file.text()).replace(/^\uFEFF/, "");
+      const rawLines = text.split(/\r?\n/).filter(l => l.trim() && !l.trim().startsWith("#"));
+      if (rawLines.length < 2) { toast.error("CSV is empty"); return; }
+      const sep = rawLines[0].includes(";") ? ";" : ",";
+      const headers = parseCSVLine(rawLines[0], sep).map(h => h.trim());
+      const rows = rawLines.slice(1).map(l => parseCSVLine(l, sep));
+
+      const toBool = (v: string) => /^(true|1|yes|y)$/i.test((v || "").trim());
+      const toNumOrNull = (v: string) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
+
+      const inserts: any[] = [];
+      const updates: { id: string; data: any }[] = [];
+      for (const r of rows) {
+        const obj: Record<string, string> = {};
+        headers.forEach((h, i) => { obj[h] = (r[i] ?? "").trim(); });
+        if (!obj.name) continue;
+        const payload: any = {
+          name: obj.name,
+          category: obj.category || "General",
+          cost_of_goods: toNumOrNull(obj.cost_of_goods) ?? 0,
+          price: toNumOrNull(obj.price) ?? 0,
+          unit: obj.unit || "piece",
+          inventory: parseInt(obj.inventory) || 0,
+          inventory_min_threshold: parseInt(obj.inventory_min_threshold) || 5,
+          image_url: obj.image_url || null,
+          is_available: obj.is_available === "" ? true : toBool(obj.is_available),
+          is_special: toBool(obj.is_special),
+          special_price: obj.special_price ? toNumOrNull(obj.special_price) : null,
+          special_end_date: obj.special_end_date || null,
+        };
+        if (obj.id) updates.push({ id: obj.id, data: payload });
+        else inserts.push(payload);
+      }
+
+      let okI = 0, okU = 0, fail = 0;
+      if (inserts.length) {
+        const { error } = await supabase.from("products").insert(inserts);
+        if (error) fail += inserts.length; else okI = inserts.length;
+      }
+      for (const u of updates) {
+        const { error } = await supabase.from("products").update(u.data).eq("id", u.id);
+        if (error) fail++; else okU++;
+      }
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      toast.success(`Imported: ${okI} new, ${okU} updated${fail ? `, ${fail} failed` : ""}`);
+    } catch (err: any) {
+      toast.error(`Import failed: ${err.message || err}`);
+    } finally {
+      setImporting(false);
+      if (csvInputRef.current) csvInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center flex-wrap gap-2">
@@ -179,6 +260,10 @@ export default function AdminProducts() {
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={handleDownloadTemplate} className="gap-2">
             <FileDown className="h-4 w-4" /> Download Template
+          </Button>
+          <input type="file" ref={csvInputRef} accept=".csv,text/csv" onChange={handleImportCSV} className="hidden" />
+          <Button variant="outline" size="sm" onClick={() => csvInputRef.current?.click()} disabled={importing} className="gap-2">
+            <FileUp className="h-4 w-4" /> {importing ? "Importing..." : "Import CSV"}
           </Button>
           {products && products.length > 0 ? (
             <Button variant="outline" size="sm" onClick={handleExportProducts} className="gap-2">
