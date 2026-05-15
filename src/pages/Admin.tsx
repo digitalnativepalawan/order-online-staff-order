@@ -19,6 +19,7 @@ import AdminLoyalty from "@/components/admin/AdminLoyalty";
 import AdminReports from "@/components/admin/AdminReports";
 import AdminCatering from "@/components/admin/AdminCatering";
 import AdminStaff from "@/components/admin/AdminStaff";
+import AdminTables from "@/components/admin/AdminTables";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrderRealtime, useSoundEnabled, useUnviewedOrders } from "@/hooks/use-order-alerts";
@@ -90,6 +91,7 @@ function AdminPanel() {
           <TabsTrigger value="loyalty" className="text-[12px] md:text-sm min-h-[44px] px-2">Loyalty</TabsTrigger>
           <TabsTrigger value="header-footer" className="text-[12px] md:text-sm min-h-[44px] px-2">Header</TabsTrigger>
           <TabsTrigger value="staff" className="text-[12px] md:text-sm min-h-[44px] px-2">Staff</TabsTrigger>
+          <TabsTrigger value="tables" className="text-[12px] md:text-sm min-h-[44px] px-2">Tables</TabsTrigger>
           <TabsTrigger value="settings" className="text-[12px] md:text-sm min-h-[44px] px-2">Settings</TabsTrigger>
         </TabsList>
 
@@ -107,6 +109,7 @@ function AdminPanel() {
         <TabsContent value="header-footer"><AdminHeaderFooter /></TabsContent>
         <TabsContent value="loyalty"><AdminLoyalty /></TabsContent>
         <TabsContent value="staff"><AdminStaff /></TabsContent>
+        <TabsContent value="tables"><AdminTables /></TabsContent>
         <TabsContent value="settings"><AdminSettings /></TabsContent>
       </Tabs>
     </div>
