@@ -103,11 +103,12 @@ export default function StaffOrder() {
         total_price: subtotal,
         profit,
         order_status: newStatus || orderStatus,
-        ordered_at: newStatus === "preparing" ? new Date().toISOString() : order?.ordered_at,
+        ordered_at: newStatus === "ordered" ? new Date().toISOString() : order?.ordered_at,
       })
       .eq("id", orderId!);
     if (error) {
-      toast.error("Failed to save");
+      console.error("Save order failed:", error);
+      toast.error(error.message || "Failed to save");
       return false;
     }
     qc.invalidateQueries({ queryKey: ["staff-order", orderId] });
@@ -117,7 +118,7 @@ export default function StaffOrder() {
 
   const sendToKitchen = async () => {
     if (items.length === 0) return toast.error("Add items first");
-    const ok = await saveOrder("preparing");
+    const ok = await saveOrder("ordered");
     if (ok) {
       toast.success("Sent to kitchen");
       navigate("/staff/tables");

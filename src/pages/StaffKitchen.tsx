@@ -16,7 +16,7 @@ export default function StaffKitchen() {
       const { data, error } = await supabase
         .from("orders")
         .select("*")
-        .in("order_status", ["preparing", "pending"])
+        .in("order_status", ["ordered", "preparing"])
         .neq("payment_status", "paid")
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -56,7 +56,7 @@ export default function StaffKitchen() {
                     </div>
                     <div className="text-xs text-muted-foreground">{elapsed}m ago</div>
                   </div>
-                  <Badge variant={o.order_status === "preparing" ? "default" : "secondary"} className="capitalize">
+                  <Badge variant={o.order_status === "ordered" ? "default" : "secondary"} className="capitalize">
                     {o.order_status}
                   </Badge>
                 </div>

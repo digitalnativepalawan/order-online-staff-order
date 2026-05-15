@@ -1,63 +1,44 @@
-## Staff POS Rebuild
+Do I know what the issue is? Yes.
 
-Restoring the full staff system that was previously removed, plus a new admin "Staff" management page and a Staff button in the main header.
+The immediate failure is not staff login or tables. The waitstaff order is created successfully, but when they click “Send to Kitchen” the app updates `order_status` to `preparing`. The database rejects that with:
 
-### 1. Database
-The existing `staff_users` table already has `name`, `passkey`, `role`, `is_active`. No schema migration needed.
-Add a check that `role` is one of: `waiter`, `kitchen`, `cashier`, `manager` (handled in app, not DB constraint).
-Seed one demo user per role on first load if table is empty (manager passkey: `9999`).
+```text
+new row for relation "orders" violates check constraint "orders_order_status_check"
+```
 
-### 2. Auth helper — `src/lib/staff-auth.ts`
-- `signIn(passkey)` → query `staff_users`, store `{ id, name, role }` in `sessionStorage` under `staff_session`.
-- `getSession()`, `signOut()`, `hasRole(roles[])`.
+The cloned database already allows staff workflow statuses like `seated`, `ordering`, `ordered`, `served`, `ready_to_pay`, `paid`, and `closed`, but the newly-added staff UI code uses `preparing`, which is not allowed. That mismatch is why the toast says “Failed to save”.
 
-### 3. Routes (added to `App.tsx`)
-- `/staff` — passkey login screen (`StaffLogin.tsx`)
-- `/staff/tables` — grid of `restaurant_tables`, tap to start/resume order (waiter, manager)
-- `/staff/order/:orderId` — product picker + cart, send to kitchen (waiter, manager)
-- `/staff/kitchen` — live queue of pending orders, mark items ready (kitchen, manager)
-- `/staff/pay/:orderId` — payment screen, select method, mark paid (cashier, manager)
-All wrapped in `<StaffGuard requiredRoles={[...]}>` which redirects to `/staff` if not signed in or wrong role.
+Plan:
 
-### 4. Components
-- `src/components/staff/StaffGuard.tsx` — role gate
-- `src/components/staff/StaffTopBar.tsx` — shows name, role, sign out, links to permitted screens
-- Pages listed above
+1. Fix the waitstaff send-to-kitchen status path
+   - In `src/pages/StaffOrder.tsx`, change the send-to-kitchen update from `preparing` to the database-supported `ordered` status.
+   - Keep `ordered_at` set when the food is sent.
+   - Improve the toast error to show the real save error in development/logs instead of hiding it behind only “Failed to save”.
 
-### 5. Header Staff button
-Add a `Users` icon button in `src/components/Header.tsx` (next to cart/admin) that links to `/staff`. Visibility controlled by existing `header_settings.show_admin_icon` pattern — adds `show_staff_icon` (defaulting on, no migration; treat missing as true).
+2. Fix the kitchen queue to match the cloned workflow
+   - In `src/pages/StaffKitchen.tsx`, load orders with status `ordered` instead of `preparing`.
+   - Keep “Mark Ready” moving orders to `ready`, which is already allowed by the database.
+   - Make the badge/status display match the actual workflow.
 
-### 6. Admin Staff management
-- New `src/components/admin/AdminStaff.tsx` — list / add / edit / deactivate staff users.
-- New route `/admin/staff` and nav entry in `AdminLayout.tsx` and `Admin.tsx` tabs.
+3. Audit the staff POS flow for other cloned-code mismatches
+   - Check staff table opening, order editing, kitchen ready, cashier payment, and admin order filters against the allowed database statuses.
+   - Update admin order source/status filters so staff orders are visible and not hidden behind only `online` / `pos` assumptions.
+   - Avoid unnecessary database changes because the database already has the correct staff statuses; the frontend code is what drifted.
 
-### 7. Order flow integration
-Staff orders use the existing `orders` table:
-- `order_source = 'staff'`
-- `staff_id`, `table_number` set
-- `payment_status` toggled by cashier screen
-Existing admin Orders view will show them automatically.
+4. Validate the full workflow after implementation
+   - Open a table as waiter.
+   - Add items.
+   - Send to kitchen.
+   - Confirm the order status becomes `ordered` and appears in the kitchen queue.
+   - Mark ready.
+   - Confirm cashier/admin can see and complete payment.
 
-### Files to create
-- `src/lib/staff-auth.ts`
-- `src/components/staff/StaffGuard.tsx`
-- `src/components/staff/StaffTopBar.tsx`
-- `src/pages/StaffLogin.tsx`
-- `src/pages/StaffTables.tsx`
-- `src/pages/StaffOrder.tsx`
-- `src/pages/StaffKitchen.tsx`
-- `src/pages/StaffPayment.tsx`
-- `src/components/admin/AdminStaff.tsx`
+Files to change:
 
-### Files to edit
-- `src/App.tsx` — add staff routes + admin/staff route
-- `src/components/Header.tsx` — add Staff button
-- `src/components/admin/AdminLayout.tsx` — add Staff nav item
-- `src/pages/Admin.tsx` — add Staff tab
+```text
+src/pages/StaffOrder.tsx
+src/pages/StaffKitchen.tsx
+src/components/admin/AdminOrders.tsx
+```
 
-### Out of scope
-- Stripe/online payment for staff (cash/card/qr only, recorded manually)
-- Per-staff sales reports (can add later)
-- Real-time presence
-
-Approve to build, or tell me what to trim.
+No schema migration should be needed for the main fix unless a later audit finds another real database constraint mismatch.
