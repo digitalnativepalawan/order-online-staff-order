@@ -1,0 +1,2 @@
+ALTER TABLE public.orders DROP CONSTRAINT orders_order_source_check;
+ALTER TABLE public.orders ADD CONSTRAINT orders_order_source_check CHECK (order_source = ANY (ARRAY['online'::text,'pos'::text,'staff'::text]));
