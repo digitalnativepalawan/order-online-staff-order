@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Plus, Pencil, Trash2, Upload, FileDown, Download, FileUp } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 const CSV_HEADERS = [
   "id","name","category","cost_of_goods","price","unit","inventory",
@@ -199,12 +200,26 @@ export default function AdminProducts() {
     if (!file) return;
     setImporting(true);
     try {
-      const text = (await file.text()).replace(/^\uFEFF/, "");
-      const rawLines = text.split(/\r?\n/).filter(l => l.trim() && !l.trim().startsWith("#"));
-      if (rawLines.length < 2) { toast.error("CSV is empty"); return; }
-      const sep = rawLines[0].includes(";") ? ";" : ",";
-      const headers = parseCSVLine(rawLines[0], sep).map(h => h.trim());
-      const rows = rawLines.slice(1).map(l => parseCSVLine(l, sep));
+      const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+      let headers: string[] = [];
+      let rows: string[][] = [];
+      if (isExcel) {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: "array" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const aoa = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, raw: false, defval: "" });
+        const filtered = aoa.filter(r => r && r.some(c => String(c).trim()) && !String(r[0] ?? "").trim().startsWith("#"));
+        if (filtered.length < 2) { toast.error("File is empty"); return; }
+        headers = filtered[0].map((h: any) => String(h).trim());
+        rows = filtered.slice(1).map(r => r.map((c: any) => (c == null ? "" : String(c))));
+      } else {
+        const text = (await file.text()).replace(/^\uFEFF/, "");
+        const rawLines = text.split(/\r?\n/).filter(l => l.trim() && !l.trim().startsWith("#"));
+        if (rawLines.length < 2) { toast.error("CSV is empty"); return; }
+        const sep = rawLines[0].includes(";") ? ";" : ",";
+        headers = parseCSVLine(rawLines[0], sep).map(h => h.trim());
+        rows = rawLines.slice(1).map(l => parseCSVLine(l, sep));
+      }
 
       const toBool = (v: string) => /^(true|1|yes|y)$/i.test((v || "").trim());
       const toNumOrNull = (v: string) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
@@ -261,9 +276,9 @@ export default function AdminProducts() {
           <Button variant="outline" size="sm" onClick={handleDownloadTemplate} className="gap-2">
             <FileDown className="h-4 w-4" /> Download Template
           </Button>
-          <input type="file" ref={csvInputRef} accept=".csv,text/csv" onChange={handleImportCSV} className="hidden" />
+          <input type="file" ref={csvInputRef} accept=".csv,.xlsx,.xls,text/csv" onChange={handleImportCSV} className="hidden" />
           <Button variant="outline" size="sm" onClick={() => csvInputRef.current?.click()} disabled={importing} className="gap-2">
-            <FileUp className="h-4 w-4" /> {importing ? "Importing..." : "Import CSV"}
+            <FileUp className="h-4 w-4" /> {importing ? "Importing..." : "Import CSV/Excel"}
           </Button>
           {products && products.length > 0 ? (
             <Button variant="outline" size="sm" onClick={handleExportProducts} className="gap-2">
