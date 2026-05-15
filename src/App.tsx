@@ -34,6 +34,13 @@ import Catering from "./pages/Catering";
 import AdminCatering from "./components/admin/AdminCatering";
 import Onboarding from "./pages/Onboarding";
 import OnboardingGate from "./components/OnboardingGate";
+import StaffLogin from "./pages/StaffLogin";
+import StaffTables from "./pages/StaffTables";
+import StaffOrder from "./pages/StaffOrder";
+import StaffKitchen from "./pages/StaffKitchen";
+import StaffPayment from "./pages/StaffPayment";
+import StaffGuard from "./components/staff/StaffGuard";
+import AdminStaff from "./components/admin/AdminStaff";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +68,13 @@ const App = () => (
                 <Route path="/invoice/:orderId" element={<Invoice />} />
                 <Route path="/catering" element={<Catering />} />
 
+                {/* Staff POS */}
+                <Route path="/staff" element={<StaffLogin />} />
+                <Route path="/staff/tables" element={<StaffGuard roles={["waiter","cashier","kitchen"]}><StaffTables /></StaffGuard>} />
+                <Route path="/staff/order/:orderId" element={<StaffGuard roles={["waiter","cashier"]}><StaffOrder /></StaffGuard>} />
+                <Route path="/staff/kitchen" element={<StaffGuard roles={["kitchen"]}><StaffKitchen /></StaffGuard>} />
+                <Route path="/staff/pay/:orderId" element={<StaffGuard roles={["cashier"]}><StaffPayment /></StaffGuard>} />
+
                 <Route path="/:slug" element={<DynamicPage />} />
 
                 {/* Admin Routes with Layout */}
@@ -80,6 +94,7 @@ const App = () => (
                 <Route path="/admin/categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
                 <Route path="/admin/units" element={<AdminLayout><AdminUnits /></AdminLayout>} />
                 <Route path="/admin/catering" element={<AdminLayout><AdminCatering /></AdminLayout>} />
+                <Route path="/admin/staff" element={<AdminLayout><AdminStaff /></AdminLayout>} />
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
