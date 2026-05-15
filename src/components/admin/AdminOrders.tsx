@@ -60,7 +60,7 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
   const qc = useQueryClient();
   const { data: settings } = useBusinessSettings();
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sourceFilter, setSourceFilter] = useState<"all" | "online" | "pos">("all");
+  const [sourceFilter, setSourceFilter] = useState<"all" | "online" | "pos" | "staff">("all");
   const [search, setSearch] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [stampOrder, setStampOrder] = useState<any>(null);
@@ -215,6 +215,7 @@ export default function AdminOrders({ initialStatusFilter }: AdminOrdersProps = 
           <option value="all">All sources</option>
           <option value="online">Online</option>
           <option value="pos">POS</option>
+          <option value="staff">Staff</option>
         </select>
       </div>
       <div className="relative">
