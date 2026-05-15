@@ -1,0 +1,1 @@
+UPDATE public.business_settings SET admin_passkey='5309' WHERE id=1;
