@@ -20,7 +20,6 @@ import {
   LogOut,
   UtensilsCrossed,
   PartyPopper,
-  Users as UsersIcon,
 } from "lucide-react";
 
 interface NavItem {
@@ -52,7 +51,7 @@ const allNavItems: NavItem[] = [
   { label: "Categories", icon: Package, path: "/admin/categories" },
   { label: "Units", icon: UtensilsCrossed, path: "/admin/units" },
   { label: "Catering", icon: PartyPopper, path: "/admin/catering" },
-  { label: "Staff", icon: UsersIcon, path: "/admin/staff" },
+  { label: "Staff", icon: Users, path: "/admin/staff" },
 ];
 
 interface AdminLayoutProps {
